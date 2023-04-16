@@ -1,5 +1,7 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
+// # docker run -d  -e POSTGRES_PASSWORD=mysecretpassword -e PGDATA=/var/lib/postgresql/data/pgdata -v /Users/yasensim/nexttest/test/sqldata:/var/lib/postgresql/data -p 5432:5432 postgres
+// npx prisma db push
 
 generator client {
   provider = "prisma-client-js"
