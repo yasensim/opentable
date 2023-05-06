@@ -1,4 +1,8 @@
 import validator from 'validator';
+import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcrypt';
+
+const prisma = new PrismaClient();
 
 export async function GET(request: Request, response: Response) {
   return new Response(JSON.stringify({meassage: "My SignUP implementation!"}),  {status: 200, headers: {'Content-Type': 'application/json'}})
@@ -42,18 +46,50 @@ export async function POST(request: Request) {
     },
     ];
 
-    validationSchema.forEach((item) => {
-      console.log(item);
-      if (item.valid === false) {
-        console.log("internal: "+item.message);
-        // NEZNAM ZASTO NE RABOTI
-        return new Response(item.message, {status: 400});
-      }
-    });
+  let invalidItemMessage = null;
+
+  for (const item of validationSchema) {
+    console.log(item);
+    if (item.valid === false) {
+      console.log("internal: " + item.message);
+      invalidItemMessage = item.message;
+      break;
+    }
+  }
+
+  if (invalidItemMessage) {
+    return new Response(invalidItemMessage, { status: 400 });
+  }
+
+const user = await prisma.user.findUnique({
+  where: {
+    email: body.email,
+  },
+});
+
+if(user) {
+  return new Response('Email already exists', {status: 400});
+}
+
+const hashedPassword = await bcrypt.hash(body.password, 10);
+
+const newUser = await prisma.user.create({
+  data: {
+    email: body.email,
+    password: hashedPassword,
+    first_name: body.firstName,
+    last_name: body.lastName,
+    phone: body.phoneNumber,
+    city: body.city,
+  },
+});
+
+
+
 
     try {
       console.log(body.email);  
-      return new Response('Email submitted successfully', {status: 200});
+      return new Response(JSON.stringify({user: newUser}), {status: 200});
     } catch (error) {
       console.error('DynamoDB error:', error);
       return new Response('Failed to submit email', {status: 500});
