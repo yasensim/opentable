@@ -1,6 +1,7 @@
 import validator from 'validator';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcrypt';
+import * as jose from 'jose';
 
 const prisma = new PrismaClient();
 
@@ -84,12 +85,17 @@ const newUser = await prisma.user.create({
   },
 });
 
-
+const alg = 'HS256';
+const secret = new TextEncoder().encode(process.env.JWT_SECRET);
+const token = await new jose.SignJWT({ email: newUser.email})
+  .setProtectedHeader({alg})
+  .setExpirationTime('24h')
+  .sign(secret);
 
 
     try {
       console.log(body.email);  
-      return new Response(JSON.stringify({user: newUser}), {status: 200});
+      return new Response(JSON.stringify({user: newUser, token: token}), {status: 200});
     } catch (error) {
       console.error('DynamoDB error:', error);
       return new Response('Failed to submit email', {status: 500});
