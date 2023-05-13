@@ -18,7 +18,7 @@ export default function AuthModalInputs({inputs, handelChangeInput, isSignin}: P
             <input type="text" id="first_name" className="border rounded p-2 py-2 w-[49%] leading-tight focus:outline-none focus:shadow-outline" placeholder="First Name" 
             value={inputs.firstName} onChange={handelChangeInput} name='firstName' />
             <input type="text" id="last_name" className="border rounded p-2 py-2 w-[49%] leading-tight focus:outline-none focus:shadow-outline" placeholder="Last Name" 
-            value={inputs.lastName}  onChange={handelChangeInput} name='lasttName' />
+            value={inputs.lastName}  onChange={handelChangeInput} name='lastName' />
         </div>}
         <div className="flex my-3 justify-between text-sm">
             <input type="email" id="email" className="border rounded w-full py-2 px-3 text-gray-700 mt-1 leading-tight focus:outline-none focus:shadow-outline" placeholder="Email" 

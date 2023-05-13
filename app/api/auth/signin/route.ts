@@ -34,7 +34,7 @@ export async function POST(request: Request) {
     });
 
     if (!user) {
-        return new Response(JSON.stringify('Error: Email already exists'), {status: 401});
+        return new Response(JSON.stringify('Error: Email not registred '), {status: 401});
     }
 
     const isMatch = await bcrypt.compare(password, user.password);

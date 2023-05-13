@@ -1,9 +1,10 @@
 "use client"
 
-import {useState} from 'react';
+import {use, useEffect, useState} from 'react';
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import AuthModalInputs from './AuthModalInputs';
+import  useAuth  from '../../hooks/useAuth';
 
 const style = {
   position: 'absolute' as 'absolute',
@@ -20,6 +21,7 @@ export default function AuthModal({isSignin}: {isSignin: boolean}) {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  const {signin} = useAuth();
 
   const renderContent = (signinContent: string, signupContent: string) => {
     return isSignin ? signinContent : signupContent;
@@ -38,6 +40,33 @@ export default function AuthModal({isSignin}: {isSignin: boolean}) {
     lastName: '',
     phoneNumber: '',
   });
+  
+  const [isDisabled, setIsDisabled] = useState(true);
+  useEffect(() => {
+    if (isSignin) {
+      if (inputs.email && inputs.password) {
+        setIsDisabled(false);
+      } else {
+        setIsDisabled(true);
+      }
+    } else {
+      if (inputs.email && inputs.password && inputs.city && inputs.firstName && inputs.lastName && inputs.phoneNumber) {
+        setIsDisabled(false);
+      } else {
+        setIsDisabled(true);
+      }
+    }
+  }, [inputs]);
+
+  const handleClick = () => {
+    if (isSignin) {
+      signin(inputs.email, inputs.password);
+    } else {
+      // signup(inputs.email, inputs.password, inputs.city, inputs.firstName, inputs.lastName, inputs.phoneNumber);
+    }
+  }
+
+
 
   return (
     <div>
@@ -66,7 +95,10 @@ export default function AuthModal({isSignin}: {isSignin: boolean}) {
                 handelChangeInput={handelChangeInput}
                 isSignin={isSignin}
               />
-              <button className='uppercase bg-red-600 w-full text-white p-3 rounded text-sm mb-5 disabled:bg-gray-400'>
+              <button className='uppercase bg-red-600 w-full text-white p-3 rounded text-sm mb-5 disabled:bg-gray-400' 
+                disabled={isDisabled} 
+                onClick={handleClick}
+              >
                 {renderContent("Sign in", "Create Account")}
               </button>
             </div>
